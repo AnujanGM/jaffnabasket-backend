@@ -1,5 +1,12 @@
 HELP.md
 target/
+
+### Secrets ###
+application-secrets.yaml
+.env
+
+### macOS ###
+.DS_Store
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
