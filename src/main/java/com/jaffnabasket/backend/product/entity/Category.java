@@ -18,6 +18,8 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @EqualsAndHashCode.Include
+    @Column(name = "id", updatable = false, nullable = false,
+            columnDefinition = "uuid default gen_random_uuid()")
     private UUID id;
 
     @Column(nullable = false)
