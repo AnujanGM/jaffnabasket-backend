@@ -31,7 +31,10 @@ public class AdminUserService {
 
     @Transactional(readOnly = true)
     public Page<UserResponse> search(String query, Pageable pageable) {
-        return userRepository.search(query, pageable).map(this::toResponse);
+        Page<User> page = (query == null || query.isBlank())
+                ? userRepository.findAll(pageable)
+                : userRepository.search(query, pageable);
+        return page.map(this::toResponse);
     }
 
     @Transactional
