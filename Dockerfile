@@ -10,4 +10,16 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Render's free tier caps the container at 512MB. Left untuned, the JVM's
+# defaults (uncapped Metaspace, ~240MB reserved JIT code cache, G1GC's
+# native bookkeeping) can exceed that during Spring/Hibernate startup,
+# which gets the process OOM-killed (exit 137) before it ever finishes
+# booting. These flags keep total JVM memory comfortably under the limit.
+ENTRYPOINT ["java", \
+  "-Xms128m", "-Xmx256m", \
+  "-XX:MaxMetaspaceSize=128m", \
+  "-XX:MaxDirectMemorySize=32m", \
+  "-XX:ReservedCodeCacheSize=48m", \
+  "-XX:+UseSerialGC", \
+  "-Xss512k", \
+  "-jar", "app.jar"]
