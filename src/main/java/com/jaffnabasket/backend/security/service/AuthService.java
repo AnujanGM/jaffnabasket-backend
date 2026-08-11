@@ -101,8 +101,9 @@ public class AuthService {
 
     @Transactional
     public void logoutAll(UUID userId) {
-        sessionRepository.findByUser_IdAndRevokedAtIsNull(userId)
-                .forEach(session -> session.setRevokedAt(Instant.now()));
+        List<Session> sessions = sessionRepository.findByUser_IdAndRevokedAtIsNull(userId);
+        sessions.forEach(session -> session.setRevokedAt(Instant.now()));
+        sessionRepository.saveAll(sessions);
     }
 
     @Transactional
@@ -147,8 +148,9 @@ public class AuthService {
         token.setUsedAt(Instant.now());
         passwordResetTokenRepository.save(token);
 
-        sessionRepository.findByUser_IdAndRevokedAtIsNull(user.getId())
-                .forEach(session -> session.setRevokedAt(Instant.now()));
+        List<Session> sessions = sessionRepository.findByUser_IdAndRevokedAtIsNull(user.getId());
+        sessions.forEach(session -> session.setRevokedAt(Instant.now()));
+        sessionRepository.saveAll(sessions);
     }
 
     private LoginResponse issueTokenPair(UUID userId, List<String> roles, String deviceInfo) {
